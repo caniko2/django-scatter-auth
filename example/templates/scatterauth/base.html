@@ -1,6 +1,7 @@
 {% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -15,89 +16,90 @@
   <![endif]-->
 
   {% block css %}
-    <!-- Latest compiled and minified Bootstrap 4 beta CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <!-- Latest compiled and minified Bootstrap 4 beta CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+    integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 
-    <!-- Your stuff: Third-party css libraries go here -->
+  <!-- Your stuff: Third-party css libraries go here -->
 
   {% endblock %}
 </head>
 
 <body>
 
-<div class="m-b-1">
-  <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <a class="navbar-brand" href="#">Django Scatter auth</a>
+  <div class="m-b-1">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#">Django Scatter auth</a>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/">Home</a>
-        </li>
-        {% if request.user.is_authenticated %}
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          {% if request.user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}?next=/">Sign out</a>
           </li>
           <li class="nav-item">
             <a class="nav-link">Logged in as {{ request.user.username }}</a>
           </li>
-        {% else %}
+          {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'autologin' %}">Autologin</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'scatterauth_signup' %}">Signup</a>
           </li>
-        {% endif %}
-      </ul>
-    </div>
-  </nav>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
 
-</div>
-<div class="container">
+  </div>
+  <div class="container">
 
-  {% if messages %}
+    {% if messages %}
     {% for message in messages %}
       <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
     {% endfor %}
-  {% endif %}
+    {% endif %}
 
-  {% block content %}
-    <div class="row m-t-2">
-      <p>Use this document as a way to quick start any new project.</p>
-      <p>The current template is loaded from
-        <code>django-scatter-auth/example/templates/base.html</code>. </p>
-      <p>Whenever you overwrite the contents of <code>django-web3-auth/web3auth/urls.py</code> with your
-        own content, you should see it here.</p>
-    </div>
-  {% endblock content %}
+    {% block content %}
+      <div class="row m-t-2">
+        <p>Use this document as a way to quick start any new project.</p>
+        <p>The current template is loaded from
+          <code>django-scatter-auth/example/templates/base.html</code>. </p>
+        <p>Whenever you overwrite the contents of <code>django-web3-auth/web3auth/urls.py</code> with your
+          own content, you should see it here.</p>
+      </div>
+    {% endblock content %}
 
-</div> <!-- /container -->
+  </div> <!-- /container -->
 
-{% block modal %}{% endblock modal %}
+  {% block modal %}{% endblock modal %}
 
-<!-- Le javascript
+  <!-- Le javascript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-{% block javascript %}
-  <!-- Latest JQuery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <!-- Placed at the end of the document so the pages load faster -->
+  {% block javascript %}
+    <!-- Latest JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 
-  <!-- Tether - a requirement for Bootstrap tooltips -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"></script>
+    <!-- Tether - a requirement for Bootstrap tooltips -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"></script>
 
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
-  <!-- Your stuff: Third-party javascript libraries go here -->
-  <script src="{% static 'scatterauth/js/scatterauth.js' %}"></script>
-
-{% endblock javascript %}
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+    <!-- Your stuff: Third-party javascript libraries go here -->
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
+    <script src="{% static 'scatterauth/js/scatterauth.js' %}"></script>
+  {% endblock javascript %}
 </body>
-</html>
 
+</html>

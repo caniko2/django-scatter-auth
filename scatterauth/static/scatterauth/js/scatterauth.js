@@ -22,7 +22,7 @@ function getCookie(name) {
 }
 
 function loginWithAuthenticate(login_url, onSignatureFail, onSignatureSuccess,
-                               onLoginRequestError, onLoginFail, onLoginSuccess) {
+    onLoginRequestError, onLoginFail, onLoginSuccess) {
     scatter.authenticate().then(signature => {
         if (typeof onSignatureSuccess === 'function') {
             onSignatureSuccess(signature);

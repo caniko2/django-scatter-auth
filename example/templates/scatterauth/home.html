@@ -12,9 +12,11 @@
 {% block javascript %}
   {{ block.super }}
   <script>
-    document.addEventListener('scatterLoaded', scatterExtension => {
+    document.addEventListener(ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
+      if(!connected) return false;
       console.log('scatter loaded');
       document.getElementById('scatter-status').innerHTML = "Scatter installed!";
+      
       if (scatter.identity) {
         console.log("Identity found");
         document.getElementById('container-text').innerHTML = "Welcome, " + scatter.identity.name + '<br>Your public key: ' + scatter.identity.publicKey
@@ -22,6 +24,7 @@
         console.log('identity not found, have to signup')
         document.getElementById('container-text').innerHTML = "Please sign up first"
       }
+      window.ScatterJS = null;
     });
   </script>
 {% endblock javascript %}
