@@ -1,30 +1,55 @@
 {% extends 'scatterauth/base.html' %}
 {% block content %}
-  <div class="row m-t-2">
-    <div class="container">
+<div class="row m-t-2">
+  <div class="container">
 
-      <h4 class="col-md-12 text-center" style="margin-top: 15px" id='container-text'>Click at any menu item to interact
-        with contract</h4>
-      <h5 class="text-center" style="color: #bea05c" id="scatter-status">Scatter not installed</h5>
-    </div>
+    <h4 class="col-md-12 text-center" style="margin-top: 15px" id='container-text'>Click at any menu item to interact
+      with contract</h4>
+    <h5 class="text-center" style="color: #bea05c" id="scatter-status">Scatter not installed</h5>
   </div>
+</div>
 {% endblock content %}
 {% block javascript %}
-  {{ block.super }}
-  <script>
-    document.addEventListener(ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
-      if(!connected) return false;
-      console.log('scatter loaded');
+{{ block.super }}
+<script>
+  // Don't forget to tell ScatterJS which plugins you are using.
+  window.ScatterJS.plugins( new ScatterEOS() );
+
+  // Networks are used to reference certain blockchains.
+  // They let you get accounts and help you build signature providers.
+  var network = {
+      blockchain:'eos',
+      protocol:'https',
+      host:'nodes.get-scatter.com',
+      port:443,
+      chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+  }
+  window.ScatterJS.scatter.connect("LRB").then(connected => {
+      if (!connected) return console.log('Failed to connect with Scatter!');
+      var scatter = window.ScatterJS.scatter;
+      var requiredFields = {
+        accounts:[network]
+      }
       document.getElementById('scatter-status').innerHTML = "Scatter installed!";
-      
-      if (scatter.identity) {
+      console.log(scatter.getIdentity(requiredFields));
+
+      scatter.getIdentity(requiredFields).then(identity => {
+        console.log(identity);
+        console.log('scatter loaded');
+      if (identity) {
         console.log("Identity found");
-        document.getElementById('container-text').innerHTML = "Welcome, " + scatter.identity.name + '<br>Your public key: ' + scatter.identity.publicKey
+        var publicKey = identity["publicKey"]
+        document.getElementById('container-text').innerHTML = "Welcome, " + publicKey +
+          '<br>Your public key: ' + publicKey
       } else {
         console.log('identity not found, have to signup')
         document.getElementById('container-text').innerHTML = "Please sign up first"
-      }
-      window.ScatterJS = null;
-    });
-  </script>
+      }      
+    }).catch(error => {
+      console.log("Error!")
+    });;
+    window.ScatterJS = null;
+  });
+
+</script>
 {% endblock javascript %}

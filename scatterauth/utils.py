@@ -1,5 +1,6 @@
 from fastecdsa import curve as ecdsa_curve
 from fastecdsa import keys, ecdsa, point
+from random import randint
 import re
 import base58
 from hashlib import sha256
@@ -11,6 +12,24 @@ from django.utils.translation import ugettext_lazy as _
 
 class InvalidSignatureException(Exception):
     pass
+
+
+def scatter_sha256(encrypt_str):
+    sh = sha256(encrypt_str.encode('utf-8'))
+    return sh.hexdigest()
+
+
+def sign_data_for_desktop(data, to_sign):
+    """
+    scatter desktop
+    :param to_sign:
+    :param data:
+    :return:
+    """
+    a = scatter_sha256(to_sign)
+    b = scatter_sha256(data)
+    return '%s%s' % (a, b)
+
 
 def check_decode(key_string, key_type=None):
     # https://github.com/EOSIO/eosjs-ecc/blob/master/src/key_utils.js#L201
@@ -90,11 +109,16 @@ def signature_from_buffer(buf):
 
 
 def validate_signature(msg, sig, pubkey):
+    random_12str = randint(10**(12-1), (10**12)-1)
+    msg = sign_data_for_desktop(random_12str, sig)
+
     key_type, key_string = signature_from_string(sig)
     key = check_decode(key_string, key_type)
-    r,s,i = signature_from_buffer(key)
+    r, s, i = signature_from_buffer(key)
     pub_key_point = point_decode_from(ecdsa_curve.secp256k1, check_decode(pubkey[3:]))
+
     res = ecdsa.verify((r, s), msg, pub_key_point, ecdsa_curve.secp256k1)
+    if res is None:
+        raise InvalidSignatureException
+
     return res
-
-
