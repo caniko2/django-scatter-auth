@@ -5,6 +5,7 @@ function jtrim(text) {
         (text + "").replace(rtrim, "");
 }
 
+
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -21,12 +22,14 @@ function getCookie(name) {
     return cookieValue;
 }
 
+
 function xii_string() {
     getRandom = () => Math.round(Math.random() * 8 + 1).toString();
     var randomString = '';
     for(let i = 0; i < 12; i++) randomString += getRandom();
     return randomString
 };
+
 
 function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, onSignatureSuccess,
     onLoginRequestError, onLoginFail, onLoginSuccess) {
@@ -103,6 +106,7 @@ function signupWithData(pubkey, pubkeyFieldName, email, signup_url, onSignupRequ
         }
     };
 
+
     request.onerror = function () {
         console.log("Signup failed - there was an error");
         if (typeof onSignupRequestError === 'function') {
@@ -115,6 +119,7 @@ function signupWithData(pubkey, pubkeyFieldName, email, signup_url, onSignupRequ
     var formData = pubkeyFieldName + '=' + pubkey + '&email=' + email;
     request.send(formData);
 }
+
 
 async function requestIdentity(requiredFields, pubkeyFieldName, signup_url, network, onIdentityReject) {
     let identitySettings = {
