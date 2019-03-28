@@ -1,28 +1,38 @@
 {% extends 'scatterauth/base.html' %}
 {% block content %}
-  <div class="row m-t-2">
-    <div class="container">
-      <h4 class="col-md-12 text-center" style="margin-top: 15px" id='container-text'>Click at any menu item to interact
-        with contract</h4>
-    </div>
+<div class="row m-t-2">
+  <div class="container">
+    <h4 class="col-md-12 text-center" style="margin-top: 15px" id='container-text'>Click at any menu item to interact
+      with contract</h4>
   </div>
+</div>
 {% endblock content %}
 {% block javascript %}
-  {{ block.super }}
-  <script>
-    var login_url = '{% url 'scatterauth_login_api' %}';
-    document.addEventListener('scatterLoaded', scatterExtension => {
-      console.log('scatter loaded');
-      if (scatter.identity) {
-        console.log("Identity found");
-        loginWithAuthenticate(login_url,console.log,console.log,console.log,console.log, function (resp) {
-          window.location.replace(resp.redirect_url);
+{{ block.super }}
+<script>
+  var login_url = "{% url 'scatterauth_login_api' %}";
+  window.ScatterJS.scatter.connect("LRB").then(connected => {
+        if (!connected) return console.log('Failed to connect with Scatter!');
+        var scatter = window.ScatterJS.scatter;
+        var requiredFields = {
+          accounts: [network]
+        }
+        scatter.getIdentity(requiredFields).then(identity => {
+          var publicKey = identity["publicKey"]
+          console.log('scatter loaded');
+          if (identity) {
+            console.log("Identity found");
+            loginWithAuthenticate(scatter, identity, login_url, console.log, console.log, console.log, console.log, function (resp) {
+              window.location.replace(resp.redirect_url);
+            });
+            document.getElementById('container-text').innerHTML = "Welcome, " + "Can" +
+              '<br>Your public key: ' + publicKey
+          } else {
+            console.log('identity not found, have to signup');
+            document.getElementById('container-text').innerHTML = "Please sign up first"
+          }
         });
-        document.getElementById('container-text').innerHTML = "Welcome, " + scatter.identity.name + '<br>Your public key: ' + scatter.identity.publicKey
-      } else {
-        console.log('identity not found, have to signup');
-        document.getElementById('container-text').innerHTML = "Please sign up first"
-      }
-    });
-  </script>
+        });
+
+</script>
 {% endblock javascript %}

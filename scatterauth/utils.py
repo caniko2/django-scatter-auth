@@ -109,7 +109,7 @@ def signature_from_buffer(buf):
 
 
 def validate_signature(msg, sig, pubkey):
-    random_12str = randint(10**(12-1), (10**12)-1)
+    random_12str = str(randint(10**(12-1), (10**12)-1))
     msg = sign_data_for_desktop(random_12str, sig)
 
     key_type, key_string = signature_from_string(sig)

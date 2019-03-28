@@ -30,16 +30,24 @@
     var signup = '{% url 'scatterauth_signup_api' %}';
     var fields = ['email'];
     var public_key_field_name = 'username';
-    document.addEventListener('scatterLoaded', scatterExtension => {
-      console.log("Scatter installed!");
-      if (scatter.identity) {
-        // login the user with api
-        console.log("Identity found");
-        console.log(scatter.identity);
-        console.log("Welcome, " + scatter.identity.name + '<br>Your public key: ' + scatter.identity.publicKey);
-      } else {
-        requestIdentity(fields,public_key_field_name, signup, null, console.log);
+
+    window.ScatterJS.scatter.connect("LRB").then(connected => {
+      if (!connected) return console.log('Failed to connect with Scatter!');
+      var scatter = window.ScatterJS.scatter;
+      var requiredFields = {
+      accounts: [network]
       }
+      scatter.getIdentity(requiredFields).then(identity => {
+        if (identity) {
+          // login the user with api
+          console.log("Identity found");
+          console.log(identity);
+          console.log("Welcome, " + identity.name ? identity.name : "Anonymous"
+                      + '<br>Your public key: ' + identity.publicKey);
+        } else {
+          requestIdentity(fields, public_key_field_name, signup, null, console.log);
+        }
+      });
     });
   </script>
 {% endblock javascript %}

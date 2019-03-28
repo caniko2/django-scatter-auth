@@ -12,30 +12,17 @@
 {% block javascript %}
 {{ block.super }}
 <script>
-  // Don't forget to tell ScatterJS which plugins you are using.
-  window.ScatterJS.plugins( new ScatterEOS() );
-
-  // Networks are used to reference certain blockchains.
-  // They let you get accounts and help you build signature providers.
-  var network = {
-      blockchain:'eos',
-      protocol:'https',
-      host:'nodes.get-scatter.com',
-      port:443,
-      chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
-  }
   window.ScatterJS.scatter.connect("LRB").then(connected => {
-      if (!connected) return console.log('Failed to connect with Scatter!');
-      var scatter = window.ScatterJS.scatter;
-      var requiredFields = {
-        accounts:[network]
-      }
-      document.getElementById('scatter-status').innerHTML = "Scatter installed!";
-      console.log(scatter.getIdentity(requiredFields));
+    if (!connected) return console.log('Failed to connect with Scatter!');
+    var scatter = window.ScatterJS.scatter;
+    var requiredFields = {
+      accounts: [network]
+    }
+    document.getElementById('scatter-status').innerHTML = "Scatter installed!";
+    console.log(scatter.getIdentity(requiredFields));
 
-      scatter.getIdentity(requiredFields).then(identity => {
-        console.log(identity);
-        console.log('scatter loaded');
+    scatter.getIdentity(requiredFields).then(identity => {
+      console.log('scatter loaded');
       if (identity) {
         console.log("Identity found");
         var publicKey = identity["publicKey"]
@@ -44,7 +31,7 @@
       } else {
         console.log('identity not found, have to signup')
         document.getElementById('container-text').innerHTML = "Please sign up first"
-      }      
+      }
     }).catch(error => {
       console.log("Error!")
     });;

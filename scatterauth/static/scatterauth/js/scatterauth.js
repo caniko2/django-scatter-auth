@@ -21,9 +21,16 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function loginWithAuthenticate(login_url, onSignatureFail, onSignatureSuccess,
+function xii_string() {
+    getRandom = () => Math.round(Math.random() * 8 + 1).toString();
+    var randomString = '';
+    for(let i = 0; i < 12; i++) randomString += getRandom();
+    return randomString
+};
+
+function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, onSignatureSuccess,
     onLoginRequestError, onLoginFail, onLoginSuccess) {
-    scatter.authenticate().then(signature => {
+    scatter.authenticate(xii_string()).then(signature => {
         if (typeof onSignatureSuccess === 'function') {
             onSignatureSuccess(signature);
         }
@@ -60,7 +67,7 @@ function loginWithAuthenticate(login_url, onSignatureFail, onSignatureSuccess,
         };
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        var formData = 'pubkey=' + scatter.identity.publicKey + '&signature=' + signature;
+        var formData = 'pubkey=' + identity.publicKey + '&signature=' + signature;
         request.send(formData);
 
     }).catch(signatureError => {

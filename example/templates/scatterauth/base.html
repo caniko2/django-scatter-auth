@@ -99,6 +99,20 @@
     <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
     <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
     <script src="{% static 'scatterauth/js/scatterauth.js' %}"></script>
+    <script>
+    // Don't forget to tell ScatterJS which plugins you are using.
+    window.ScatterJS.plugins( new ScatterEOS() );
+
+    // Networks are used to reference certain blockchains.
+    // They let you get accounts and help you build signature providers.
+    var network = {
+      blockchain:'eos',
+      protocol:'https',
+      host:'nodes.get-scatter.com',
+      port:443,
+      chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+    }
+    </script>
   {% endblock javascript %}
 </body>
 
