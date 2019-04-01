@@ -11,28 +11,50 @@
 {{ block.super }}
 <script>
   var login_url = "{% url 'scatterauth_login_api' %}";
+
+  function random12() {
+    var arr = [];
+    for (var i = 0; i < 12; i++) {
+      var num = Math.random() * 9;
+      num = parseInt(num, 10);
+      arr.push(num);
+    }
+    return arr.join('');
+  }
+
   window.ScatterJS.scatter.connect("LRB").then(connected => {
-        if (!connected) return console.log('Failed to connect with Scatter!');
-        var scatter = window.ScatterJS.scatter;
-        var requiredFields = {
-          accounts: [network]
-        }
-        scatter.getIdentity(requiredFields).then(identity => {
-          var publicKey = identity["publicKey"]
-          console.log('scatter loaded');
-          if (identity) {
-            console.log("Identity found");
-            loginWithAuthenticate(scatter, identity, login_url, console.log, console.log, console.log, console.log, function (resp) {
-              window.location.replace(resp.redirect_url);
+    if (!connected) return console.log('Failed to connect with Scatter!');
+    var scatter = window.ScatterJS.scatter;
+    var requiredFields = {
+      accounts: [network]
+    }
+    // if (window.is_login) return true;
+    scatter.getIdentity(requiredFields).then(identity => {
+      if (identity) {
+        var sign_data = random12();
+        console.log(sign_data);
+        var toSign = 'xxxxxx';
+        toSign = identity.accounts[0].name;
+        console.log(toSign);
+        console.log(scatter.identity.publicKey);
+
+        scatter.authenticate(sign_data, toSign)
+          .then(res => {
+            $.post('xxxx', {
+              'sign': res,
+              'public_key': scatter.identity.publicKey,
+              'name': scatter.identity.accounts[0].name,
+              'sign_data': sign_data,
+              'to_sign': toSign
+            }, function (data) {
+              console.log(data);
             });
-            document.getElementById('container-text').innerHTML = "Welcome, " + "Can" +
-              '<br>Your public key: ' + publicKey
-          } else {
-            console.log('identity not found, have to signup');
-            document.getElementById('container-text').innerHTML = "Please sign up first"
-          }
-        });
-        });
+          }).catch(err => {
+            console.log('err', err);
+          });
+      }
+    });
+  });
 
 </script>
 {% endblock javascript %}

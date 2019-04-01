@@ -19,7 +19,6 @@
       accounts: [network]
     }
     document.getElementById('scatter-status').innerHTML = "Scatter installed!";
-    console.log(scatter.getIdentity(requiredFields));
 
     scatter.getIdentity(requiredFields).then(identity => {
       console.log('scatter loaded');

@@ -100,6 +100,4 @@ def signup_view(request, template_name='scatterauth/signup.html'):
                 user.save()
                 login(request, user, 'scatterauth.backend.ScatterAuthBackend')
                 return redirect(get_redirect_url(request))
-    return render(request,
-                  template_name,
-                  {'form': form})
+    return render(request, template_name, {'form': form})

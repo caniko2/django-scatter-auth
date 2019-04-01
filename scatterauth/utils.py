@@ -14,23 +14,6 @@ class InvalidSignatureException(Exception):
     pass
 
 
-def scatter_sha256(encrypt_str):
-    sh = sha256(encrypt_str.encode('utf-8'))
-    return sh.hexdigest()
-
-
-def sign_data_for_desktop(data, to_sign):
-    """
-    scatter desktop
-    :param to_sign:
-    :param data:
-    :return:
-    """
-    a = scatter_sha256(to_sign)
-    b = scatter_sha256(data)
-    return '%s%s' % (a, b)
-
-
 def check_decode(key_string, key_type=None):
     # https://github.com/EOSIO/eosjs-ecc/blob/master/src/key_utils.js#L201
     buffer = bytearray(base58.b58decode(key_string))
@@ -108,17 +91,27 @@ def signature_from_buffer(buf):
     return r, s, i
 
 
-def validate_signature(msg, sig, pubkey):
-    random_12str = str(randint(10**(12-1), (10**12)-1))
-    msg = sign_data_for_desktop(random_12str, sig)
+def scatter_sha256(encrypt_str):
+    sh = sha256(encrypt_str.encode('utf-8'))
+    return sh.hexdigest()
 
-    key_type, key_string = signature_from_string(sig)
+
+def sign_data_for_desktop(data, to_sign):
+    a = scatter_sha256(to_sign)
+    b = scatter_sha256(data)
+    return '%s%s' % (a, b)
+
+
+def validate_signature(msg, sig, pubkey):
+    msg = sign_data_for_desktop('555555555555', msg)
+    key_type, key_string = signature_from_string(sig)   # split
+    print('k_string:', key_string)
     key = check_decode(key_string, key_type)
     r, s, i = signature_from_buffer(key)
     pub_key_point = point_decode_from(ecdsa_curve.secp256k1, check_decode(pubkey[3:]))
 
     res = ecdsa.verify((r, s), msg, pub_key_point, ecdsa_curve.secp256k1)
-    if res is None:
-        raise InvalidSignatureException
 
+    if res is False:
+        return None
     return res

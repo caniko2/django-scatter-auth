@@ -23,17 +23,9 @@ function getCookie(name) {
 }
 
 
-function xii_string() {
-    getRandom = () => Math.round(Math.random() * 8 + 1).toString();
-    var randomString = '';
-    for(let i = 0; i < 12; i++) randomString += getRandom();
-    return randomString
-};
-
-
 function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, onSignatureSuccess,
     onLoginRequestError, onLoginFail, onLoginSuccess) {
-    scatter.authenticate(xii_string()).then(signature => {
+    scatter.authenticate('555555555555').then(signature => {
         if (typeof onSignatureSuccess === 'function') {
             onSignatureSuccess(signature);
         }
@@ -43,14 +35,10 @@ function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, on
             if (request.status >= 200 && request.status < 400) {
                 // Success!
                 var resp = JSON.parse(request.responseText);
-                if (resp.success) {
-                    if (typeof onLoginSuccess === 'function') {
-                        onLoginSuccess(resp);
-                    }
-                } else {
-                    if (typeof onLoginFail === 'function') {
-                        onLoginFail(resp);
-                    }
+                if (resp.success && typeof onLoginSuccess === 'function') {
+                    onLoginSuccess(resp);
+                } else if (typeof onLoginFail === 'function') {
+                    onLoginFail(resp);
                 }
             } else {
                 // We reached our target server, but it returned an error
