@@ -12,16 +12,6 @@
 <script>
   var login_url = "{% url 'scatterauth_login_api' %}";
 
-  function random12() {
-    var arr = [];
-    for (var i = 0; i < 12; i++) {
-      var num = Math.random() * 9;
-      num = parseInt(num, 10);
-      arr.push(num);
-    }
-    return arr.join('');
-  }
-
   window.ScatterJS.scatter.connect("LRB").then(connected => {
     if (!connected) return console.log('Failed to connect with Scatter!');
     var scatter = window.ScatterJS.scatter;
@@ -31,29 +21,13 @@
     // if (window.is_login) return true;
     scatter.getIdentity(requiredFields).then(identity => {
       if (identity) {
-        var sign_data = random12();
-        console.log(sign_data);
-        var toSign = 'xxxxxx';
-        toSign = identity.accounts[0].name;
-        console.log(toSign);
-        console.log(scatter.identity.publicKey);
-
-        scatter.authenticate(sign_data, toSign)
-          .then(res => {
-            $.post('xxxx', {
-              'sign': res,
-              'public_key': scatter.identity.publicKey,
-              'name': scatter.identity.accounts[0].name,
-              'sign_data': sign_data,
-              'to_sign': toSign
-            }, function (data) {
-              console.log(data);
-            });
-          }).catch(err => {
-            console.log('err', err);
-          });
-      }
+        loginWithAuthenticate(scatter, identity, login_url, console.log, console.log, console.log, 
+                              console.log, console.log, console.log)
+      } else {
+        console.log('Identity not found, have to signup')
+      };
     });
+    window.ScatterJS = null;
   });
 
 </script>

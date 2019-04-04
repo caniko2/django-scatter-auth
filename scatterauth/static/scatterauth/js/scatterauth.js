@@ -23,49 +23,62 @@ function getCookie(name) {
 }
 
 
+function random12() {
+    // Create a sequence of 12 random integers for authentication
+    var arr = [];
+    var length = 12;
+    while (length--) {
+        var num = Math.random() * 9;
+        num = parseInt(num, 10);
+        arr.push(num);
+    }
+    return arr.join('');
+    }
+
+
 function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, onSignatureSuccess,
     onLoginRequestError, onLoginFail, onLoginSuccess) {
-    scatter.authenticate('555555555555').then(signature => {
-        if (typeof onSignatureSuccess === 'function') {
-            onSignatureSuccess(signature);
-        }
-        var request = new XMLHttpRequest();
-        request.open('POST', login_url, true);
-        request.onload = function () {
-            if (request.status >= 200 && request.status < 400) {
-                // Success!
-                var resp = JSON.parse(request.responseText);
-                if (resp.success && typeof onLoginSuccess === 'function') {
-                    onLoginSuccess(resp);
-                } else if (typeof onLoginFail === 'function') {
-                    onLoginFail(resp);
+        var msg = random12()
+        scatter.authenticate(msg).then(signed_msg => {
+            if (typeof onSignatureSuccess === 'function') {
+                onSignatureSuccess(signed_msg);
+            }
+            var request = new XMLHttpRequest();
+            request.open('POST', login_url, true);
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+            request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));            
+            request.onload = function () {
+                if (request.status >= 200 && request.status < 400) {
+                    // Success!
+                    var resp = JSON.parse(request.responseText);
+                    if (resp.success && typeof onLoginSuccess === 'function') {
+                        onLoginSuccess(resp);
+                    } else if (typeof onLoginFail === 'function') {
+                        onLoginFail(resp);
+                    }
+                } else {
+                    // We reached our target server, but it returned an error
+                    console.log("Scatter login failed - request status " + request.status);
+                    if (typeof onLoginRequestError === 'function') {
+                        onLoginRequestError(request);
+                    }
                 }
-            } else {
-                // We reached our target server, but it returned an error
-                console.log("Scatter login failed - request status " + request.status);
+            };
+            request.onerror = function () {
+                console.log("Scatter login failed - there was an error");
                 if (typeof onLoginRequestError === 'function') {
                     onLoginRequestError(request);
                 }
-            }
-        };
+                // There was a connection error of some sort
+            };
+            var formData = '&msg=' + msg + '&signed_msg=' + signed_msg + '&public_key=' + identity.publicKey
+            request.send(formData);
 
-        request.onerror = function () {
-            console.log("Scatter login failed - there was an error");
-            if (typeof onLoginRequestError === 'function') {
-                onLoginRequestError(request);
+        }).catch(signatureError => {
+            if (typeof onSignatureFail === 'function') {
+                onSignatureFail(signatureError);
             }
-            // There was a connection error of some sort
-        };
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-        request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        var formData = 'pubkey=' + identity.publicKey + '&signature=' + signature;
-        request.send(formData);
-
-    }).catch(signatureError => {
-        if (typeof onSignatureFail === 'function') {
-            onSignatureFail(signatureError);
-        }
-    })
+        })
 }
 
 

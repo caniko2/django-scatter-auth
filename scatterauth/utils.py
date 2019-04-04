@@ -102,16 +102,13 @@ def sign_data_for_desktop(data, to_sign):
     return '%s%s' % (a, b)
 
 
-def validate_signature(msg, sig, pubkey):
-    msg = sign_data_for_desktop('555555555555', msg)
-    key_type, key_string = signature_from_string(sig)   # split
-    print('k_string:', key_string)
+def validate_signature(public_key, msg, signed_msg):
+    key_type, key_string = signature_from_string(signed_msg)
     key = check_decode(key_string, key_type)
     r, s, i = signature_from_buffer(key)
-    pub_key_point = point_decode_from(ecdsa_curve.secp256k1, check_decode(pubkey[3:]))
-
+    pub_key_point = point_decode_from(ecdsa_curve.secp256k1,
+                                      check_decode(public_key[3:])
+                                      )
     res = ecdsa.verify((r, s), msg, pub_key_point, ecdsa_curve.secp256k1)
-
-    if res is False:
-        return None
+    print(res)
     return res

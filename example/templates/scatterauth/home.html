@@ -23,9 +23,10 @@
     scatter.getIdentity(requiredFields).then(identity => {
       console.log('scatter loaded');
       if (identity) {
-        console.log("Identity found");
+        console.log(identity);
         var publicKey = identity["publicKey"]
-        document.getElementById('container-text').innerHTML = "Welcome, " + publicKey +
+        var name = identity.accounts[0].name
+        document.getElementById('container-text').innerHTML = "Welcome, " + name +
           '<br>Your public key: ' + publicKey
       } else {
         console.log('identity not found, have to signup')
