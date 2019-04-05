@@ -37,18 +37,15 @@ def login_api(request):
         return JsonResponse({'success': False, 'error': json.loads(form.errors.as_json())})
 
     public_key = form.cleaned_data.get('public_key')
-    msg = form.cleaned_data.get('msg')
-    signed_msg = form.cleaned_data.get('signed_msg')
+    nonce = form.cleaned_data.get('nonce')
+    res = form.cleaned_data.get('res')
 
-    if not msg or not signed_msg or not public_key:
+    if not nonce or not res or not public_key:
         return JsonResponse({'error': _(
             'Please pass message, signed message, and public key'),
             'success': False})
-    print(public_key)
-    print(msg)
-    print(signed_msg)
 
-    user = authenticate(public_key=public_key, msg=msg, signed_msg=signed_msg)
+    user = authenticate(request, public_key=public_key, nonce=nonce, res=res)
     if user:
         login(request, user, 'scatterauth.backend.ScatterAuthBackend')
         return JsonResponse({'success': True, 'redirect_url': get_redirect_url(request)})

@@ -8,9 +8,9 @@ from scatterauth.settings import app_settings
 
 
 class LoginForm(forms.Form):
-    msg = forms.CharField(widget=forms.HiddenInput, max_length=12)
-    signed_msg = forms.CharField(widget=forms.HiddenInput, max_length=101)
+    nonce = forms.CharField(widget=forms.HiddenInput, max_length=12)
     public_key = forms.CharField(widget=forms.HiddenInput, max_length=53)
+    res = forms.CharField(widget=forms.HiddenInput, max_length=101)
 
     # def clean_signature(self):
     #     sig = self.cleaned_data['signature']

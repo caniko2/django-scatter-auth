@@ -1,17 +1,17 @@
 function jtrim(text) {
-    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+    const rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
     return text == null ?
-        "" :
-        (text + "").replace(rtrim, "");
+        '' :
+        (text + '').replace(rtrim, '');
 }
 
 
 function getCookie(name) {
-    var cookieValue = null;
+    let cookieValue = null;
     if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jtrim(cookies[i]);
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = jtrim(cookies[i]);
             // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) == (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -23,34 +23,29 @@ function getCookie(name) {
 }
 
 
-function random12() {
-    // Create a sequence of 12 random integers for authentication
-    var arr = [];
-    var length = 12;
-    while (length--) {
-        var num = Math.random() * 9;
-        num = parseInt(num, 10);
-        arr.push(num);
-    }
-    return arr.join('');
-    }
-
-
 function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, onSignatureSuccess,
     onLoginRequestError, onLoginFail, onLoginSuccess) {
-        var msg = random12()
-        scatter.authenticate(msg).then(signed_msg => {
+        const getRandom = () => Math.round(Math.random() * 8 + 1).toString();
+        let nonce = '';
+        for(let i = 0; i < 12; i++) nonce += getRandom();
+
+        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        const publicKey = account.isHardware ? scatter.identity.publicKey : account.publicKey;
+
+        const toSign = 'helloworldiamtheonethatknocks'
+
+        scatter.authenticate(nonce, toSign, publicKey).then(res => {
             if (typeof onSignatureSuccess === 'function') {
-                onSignatureSuccess(signed_msg);
+                onSignatureSuccess(res);
             }
-            var request = new XMLHttpRequest();
+            const request = new XMLHttpRequest();
             request.open('POST', login_url, true);
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-            request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));            
+            request.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));            
             request.onload = function () {
                 if (request.status >= 200 && request.status < 400) {
                     // Success!
-                    var resp = JSON.parse(request.responseText);
+                    const resp = JSON.parse(request.responseText);
                     if (resp.success && typeof onLoginSuccess === 'function') {
                         onLoginSuccess(resp);
                     } else if (typeof onLoginFail === 'function') {
@@ -58,20 +53,20 @@ function loginWithAuthenticate(scatter, identity, login_url, onSignatureFail, on
                     }
                 } else {
                     // We reached our target server, but it returned an error
-                    console.log("Scatter login failed - request status " + request.status);
+                    console.log('Scatter login failed - request status ' + request.status);
                     if (typeof onLoginRequestError === 'function') {
                         onLoginRequestError(request);
                     }
                 }
             };
             request.onerror = function () {
-                console.log("Scatter login failed - there was an error");
+                console.log('Scatter login failed - there was an error');
                 if (typeof onLoginRequestError === 'function') {
                     onLoginRequestError(request);
                 }
                 // There was a connection error of some sort
             };
-            var formData = '&msg=' + msg + '&signed_msg=' + signed_msg + '&public_key=' + identity.publicKey
+            const formData = '&nonce=' + nonce + '&public_key=' + identity.publicKey + '&res=' + res
             request.send(formData);
 
         }).catch(signatureError => {
@@ -100,7 +95,7 @@ function signupWithData(pubkey, pubkeyFieldName, email, signup_url, onSignupRequ
             }
         } else {
             // We reached our target server, but it returned an error
-            console.log("Signup failed - request status " + request.status);
+            console.log('Signup failed - request status ' + request.status);
             if (typeof onSignupRequestError === 'function') {
                 onSignupRequestError(request);
             }
@@ -109,14 +104,14 @@ function signupWithData(pubkey, pubkeyFieldName, email, signup_url, onSignupRequ
 
 
     request.onerror = function () {
-        console.log("Signup failed - there was an error");
+        console.log('Signup failed - there was an error');
         if (typeof onSignupRequestError === 'function') {
             onSignupRequestError(request);
         }
         // There was a connection error of some sort
     };
     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-    request.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    request.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
     var formData = pubkeyFieldName + '=' + pubkey + '&email=' + email;
     request.send(formData);
 }
@@ -134,7 +129,7 @@ async function requestIdentity(requiredFields, pubkeyFieldName, signup_url, netw
     scatter.getIdentity(identitySettings).then((identity) => {
         signupWithData(identity.publicKey, pubkeyFieldName, identity.personal.email, signup_url, console.log, console.log, console.log)
     }).catch(error => {
-        console.log("Identity or Network was rejected");
+        console.log('Identity or Network was rejected');
         if (typeof onIdentityReject === 'function') {
             onIdentityReject(error);
         }

@@ -1,17 +1,18 @@
 from django.contrib.auth import get_user_model, backends
 
-from scatterauth.utils import validate_signature, InvalidSignatureException
+from scatterauth.utils import validate_signature, sign_data, InvalidSignatureException
 from scatterauth.settings import app_settings
 
 class ScatterAuthBackend(backends.ModelBackend):
-    def authenticate(self, public_key, msg, signed_msg):
+    def authenticate(self, request, public_key, nonce, res):
         User = get_user_model()
         print(public_key)
-        print(msg)
-        print(signed_msg)
+        print(nonce)
+        print(res)
         # check if the address the user has provided matches the signature
-        msg = user_utils.sign_data_for_desktop(msg, public_key)
-        is_valid = validate_signature(public_key=public_key, msg=msg, signed_msg=signed_msg)
+        shaData = sign_data("helloworldiamtheonethatknocks", nonce)
+        print(shaData)
+        is_valid = validate_signature(public_key=public_key, shaData=shaData, res=res)
 
         if not is_valid:
             return None

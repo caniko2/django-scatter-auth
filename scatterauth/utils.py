@@ -96,19 +96,16 @@ def scatter_sha256(encrypt_str):
     return sh.hexdigest()
 
 
-def sign_data_for_desktop(data, to_sign):
-    a = scatter_sha256(to_sign)
-    b = scatter_sha256(data)
-    return '%s%s' % (a, b)
+def sign_data(signee, nonce):
+    sha_signee = scatter_sha256(signee)
+    sha_nonce = scatter_sha256(nonce)
+    return '%s%s' % (sha_signee, sha_nonce)
 
 
-def validate_signature(public_key, msg, signed_msg):
-    key_type, key_string = signature_from_string(signed_msg)
+def validate_signature(public_key, shaData, res):
+    key_type, key_string = signature_from_string(res)
     key = check_decode(key_string, key_type)
     r, s, i = signature_from_buffer(key)
-    pub_key_point = point_decode_from(ecdsa_curve.secp256k1,
-                                      check_decode(public_key[3:])
-                                      )
-    res = ecdsa.verify((r, s), msg, pub_key_point, ecdsa_curve.secp256k1)
-    print(res)
-    return res
+    pub_key_point = point_decode_from(ecdsa_curve.secp256k1, check_decode(public_key[3:]))
+    is_public_key = ecdsa.verify((r, s), shaData, pub_key_point, ecdsa_curve.secp256k1)
+    return is_public_key
