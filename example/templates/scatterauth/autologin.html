@@ -10,23 +10,16 @@
 {% block javascript %}
 {{ block.super }}
 <script>
-  var login_url = "{% url 'scatterauth_login_api' %}";
+  const login_url = "{% url 'scatterauth_login_api' %}";
 
   window.ScatterJS.scatter.connect("LRB").then(connected => {
     if (!connected) return console.log('Failed to connect with Scatter!');
-    var scatter = window.ScatterJS.scatter;
-    var requiredFields = {
+    const scatter = window.ScatterJS.scatter;
+    const requiredFields = {
       accounts: [network]
     }
-    // if (window.is_login) return true;
-    scatter.getIdentity(requiredFields).then(identity => {
-      if (identity) {
-        loginWithAuthenticate(scatter, identity, login_url, console.log, console.log, console.log, 
-                              console.log, console.log, console.log)
-      } else {
-        console.log('Identity not found, have to signup')
-      };
-    });
+    loginWithAuthenticate(scatter, requiredFields, login_url, console.log, console.log, console.log, 
+                          console.log, console.log, console.log)
     window.ScatterJS = null;
   });
 

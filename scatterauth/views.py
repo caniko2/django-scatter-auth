@@ -56,7 +56,6 @@ def login_api(request):
         
 
 
-@csrf_exempt
 @require_http_methods(['POST'])
 def signup_api(request):
     if not app_settings.SCATTERAUTH_SIGNUP_ENABLED:
@@ -64,8 +63,7 @@ def signup_api(request):
     form = SignupForm(request.POST)
     if form.is_valid():
         user = form.save(commit=False)
-        pubkey_field = app_settings.SCATTERAUTH_USER_PUBKEY_FIELD
-        setattr(user, pubkey_field, form.cleaned_data[pubkey_field])
+        setattr(user, username, form.cleaned_data['publicKey'])
         user.save()
         login(request, user, 'scatterauth.backend.ScatterAuthBackend')
         return JsonResponse({'success': True, 'redirect_url': get_redirect_url(request)})
@@ -98,6 +96,8 @@ def signup_view(request, template_name='scatterauth/signup.html'):
                 pubkey_field = app_settings.SCATTERAUTH_USER_PUBKEY_FIELD
                 setattr(user, pubkey_field, form.cleaned_data[pubkey_field])
                 user.save()
+                print(pubkey_field)
+                print(user.email)
                 login(request, user, 'scatterauth.backend.ScatterAuthBackend')
                 return redirect(get_redirect_url(request))
     return render(request, template_name, {'form': form})

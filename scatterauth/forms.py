@@ -1,10 +1,8 @@
-import string
+from scatterauth.settings import app_settings
 
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
-
 from django.utils.translation import ugettext_lazy as _
-from scatterauth.settings import app_settings
 
 
 class LoginForm(forms.Form):
@@ -24,17 +22,6 @@ signup_fields = list(set(app_settings.SCATTERAUTH_USER_SIGNUP_FIELDS + [app_sett
 
 
 class SignupForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        # first call parent's constructor
-        super().__init__(*args, **kwargs)
-
-        # make sure to make email required, because password is not set
-        # and if the user loses private key he can get 'reset' password link to email
-        if 'email' in app_settings.SCATTERAUTH_USER_SIGNUP_FIELDS:
-            self.fields['email'].required = True
-        self.fields[app_settings.SCATTERAUTH_USER_PUBKEY_FIELD].required = True
-
     def clean_address_field(self):
         # validate_eth_address(self.cleaned_data[app_settings.SCATTERAUTH_USER_PUBKEY_FIELD])
         return self.cleaned_data[app_settings.SCATTERAUTH_USER_PUBKEY_FIELD]

@@ -14,8 +14,8 @@
 <script>
   window.ScatterJS.scatter.connect("LRB").then(connected => {
     if (!connected) return console.log('Failed to connect with Scatter!');
-    var scatter = window.ScatterJS.scatter;
-    var requiredFields = {
+    const scatter = window.ScatterJS.scatter;
+    const requiredFields = {
       accounts: [network]
     }
     document.getElementById('scatter-status').innerHTML = "Scatter installed!";
@@ -24,8 +24,10 @@
       console.log('scatter loaded');
       if (identity) {
         console.log(identity);
-        var publicKey = identity["publicKey"]
-        var name = identity.accounts[0].name
+
+        const publicKey = identity.publicKey;
+        const name = identity.name ? identity.name : "Anonymous"
+
         document.getElementById('container-text').innerHTML = "Welcome, " + name +
           '<br>Your public key: ' + publicKey
       } else {

@@ -1,5 +1,6 @@
 from fastecdsa import curve as ecdsa_curve
 from fastecdsa import keys, ecdsa, point
+from fastecdsa.keys import get_public_keys_from_sig
 from random import randint
 import re
 import base58
@@ -96,10 +97,10 @@ def scatter_sha256(encrypt_str):
     return sh.hexdigest()
 
 
-def sign_data(signee, nonce):
-    sha_signee = scatter_sha256(signee)
+def sign_data(toSign, nonce):
+    sha_toSign = scatter_sha256(toSign)
     sha_nonce = scatter_sha256(nonce)
-    return '%s%s' % (sha_signee, sha_nonce)
+    return '%s%s' % (sha_toSign, sha_nonce)
 
 
 def validate_signature(public_key, shaData, res):
@@ -107,5 +108,6 @@ def validate_signature(public_key, shaData, res):
     key = check_decode(key_string, key_type)
     r, s, i = signature_from_buffer(key)
     pub_key_point = point_decode_from(ecdsa_curve.secp256k1, check_decode(public_key[3:]))
-    is_public_key = ecdsa.verify((r, s), shaData, pub_key_point, ecdsa_curve.secp256k1)
+    is_public_key = ecdsa.verify((r, s), shaData, pub_key_point, curve=ecdsa_curve.secp256k1)
+    print('is_public_key:', is_public_key)
     return is_public_key
